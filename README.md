@@ -70,4 +70,4 @@ Dashboard includes uncertainty band, vs-typical %, city overview tab, and CSV do
 - Timestamps after cleaning use **Africa/Addis_Ababa**.
 - Model excludes `avg_fare_birr`, `avg_wait_min`, `active_drivers` (not known at forecast time).
 - Validation is chronological — never random split, never score on the test file.
-- Streamlit Cloud: Main file path = `app/app.py`, packages file = `app/requirements.txt`.
+- Streamlit Cloud: Main file path = `app/app.py`, packages file = `app/requirements.txt`, Python **3.11** (see `.python-version`).

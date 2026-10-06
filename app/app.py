@@ -47,10 +47,15 @@ WATCH_ZONES = {"Ayat"}
 
 @st.cache_resource
 def load_model():
+    import warnings
+
     path = ASSETS / "final_model.joblib"
     if not path.exists():
         path = Path(__file__).resolve().parents[1] / "models" / "final_model.joblib"
-    return joblib.load(path)
+    # Cloud may install a patch sklearn newer than the pickle; warn-only is OK.
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
+        return joblib.load(path)
 
 
 @st.cache_data
