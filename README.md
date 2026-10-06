@@ -60,3 +60,4 @@ Local demo is fine if hosting is unavailable.
 - Timestamps after cleaning use **Africa/Addis_Ababa**.
 - Model excludes `avg_fare_birr`, `avg_wait_min`, `active_drivers` (not known at forecast time).
 - Validation is chronological — never random split, never score on the test file.
+2026
