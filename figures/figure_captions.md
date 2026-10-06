@@ -28,7 +28,7 @@ Average demand around football match start (−6h to +6h) and concert uplift by 
 Index of daily trips for each public holiday relative to nearby same-weekday normals, sorted. Takeaway: most holidays suppress city demand (index<1), but magnitudes differ — keep holiday flags, not a single ‘holiday’ effect size.
 
 ## fig10_model_comparison.png
-Validation RMSE for baselines and model families; rolling-origin error bar on HistGBM. Takeaway: seasonal naive beats a global mean; boosted trees improve further — report chronological scores only.
+Validation RMSE from D2 (untuned HistGBM ≈10.66); rolling-origin error bar from D3 (11.06±0.42). Tuned final model is 10.16 (D6). Takeaway: seasonal naive beats a global mean; trees improve further.
 
 ## fig11_forecast_vs_actual.png
 Predicted vs actual hourly trips for three zones over the validation fortnight. Takeaway: the model tracks daily peaks; largest misses often align with unusual event/weather hours.
