@@ -10,7 +10,7 @@ Run: `python src/run_pipeline.py`
 
 ## A1 Cleaning log
 
-See `reports/A1_cleaning_log.csv` and `data/processed/cleaning_log.csv` (**22 issues** logged across all three tables).
+See `reports/A1_cleaning_log.csv` and `data/processed/cleaning_log.csv` (21 issues logged across all three tables).
 
 Highlights:
 
@@ -37,13 +37,6 @@ Highlights:
 - **After:** exactly the 12 canonical zones:  
   Arat Kilo, Ayat, Bole, CMC, Gerji, Kazanchis, Kolfe, Lideta, Megenagna, Merkato, Piassa, Sarbet  
   (same list on train, test, and expanded events).
-
-### Event type before → after
-
-| Stage | Unique labels |
-|-------|----------------|
-| **Before (raw)** | `CONCERT`, `Concert`, `concert`, `Conference`, `conference`, `Exhibition`, `exhibition`, `Football Match`, `football match `, `football_match`, `Public Holiday`, `public holiday`, `public_holiday`, `Road closure`, `road closure`, `road_closure`, `School Break`, `school_break`, `Sports Run`, `sports_run` (**20** spellings) |
-| **After** | `concert`, `conference`, `exhibition`, `football_match`, `public_holiday`, `road_closure`, `school_break`, `sports_run` (**8** types) |
 
 ### Timestamp formats parsed
 
@@ -95,58 +88,22 @@ From `reports/A4_join_audit.json` (re-run pipeline to refresh):
 
 ---
 
-## A5 Join proof — three concrete zone-hours
+## A5 Join proof
 
-Pulled from `master_train` after the pipeline (same logic as notebook 01). Each example shows the left trip key, the attached weather row, event rows in the window, and resulting feature flags.
-
-### Example 1 — Rainy hour (weather join)
-
-| Field | Value |
-|-------|-------|
-| **Zone × hour** | Arat Kilo · **2025-05-02 17:00** EAT |
-| **Trips (target)** | 96 |
-| **Weather row** (`weather_clean`, `timestamp` = same hour) | `temp_c=21.5`, `rain_mm=21.0`, `humidity_pct=76` |
-| **Derived features** | `rain_class=heavy`, `rain_last_3h=21.85` |
-
-**Proof:** trip `pickup_hour` equals weather `timestamp` after UTC→EAT; heavy rain attaches as 21 mm that hour.
-
-### Example 2 — Football window (event interval join)
-
-| Field | Value |
-|-------|-------|
-| **Zone × hour** | Kazanchis · **2025-01-26 17:00** EAT |
-| **Trips** | 55 |
-| **Weather** | `temp_c=21.3`, `rain_mm=0.0` |
-| **Events in window** | `EVT-0007` / `EVT-9003` · `football_match` · start **15:00** · end **17:00** · attendance **34,756** (window rule: ±2h → 17:00 is in-window) |
-| **Derived features** | `in_event_window=1`, `is_football_window=1`, `hours_since_football=2.0`, `event_attendance_nearby=34756`, `n_events_overlapping=2` |
-
-**Proof:** football features fire only when zone matches and hour ∈ [start−2h, end+2h].
-
-### Example 3 — Public holiday
-
-| Field | Value |
-|-------|-------|
-| **Zone × hour** | Ayat · **2025-05-01 18:00** EAT |
-| **Trips** | 40 |
-| **Event** | `EVT-0055` · `public_holiday` · **2025-05-01 00:00 → 23:00** |
-| **Derived features** | `in_event_window=1`, `is_public_holiday=1` |
-
-**Proof:** holiday attaches for the calendar day interval on every zone that the expanded event covers (Ayat included).
+Pick examples in the notebook (rainy hour, football window, public holiday) showing attached `temp_c` / `rain_mm` / event flags. Re-run the A5 cell in `01_cleaning_and_integration.ipynb`.
 
 ---
 
 ## A6 Feature engineering
 
-≥8 engineered features with forecast-time flags **and why they help** — see `data/processed/data_dictionary_master.csv` (`why_helps` column).
+≥8 engineered features with forecast-time flags — see `data/processed/data_dictionary_master.csv`.
 
-Summary table (model-facing features):
+Includes:
 
-| Feature | Group | Known at forecast? | Why we expect it to help |
-|---------|-------|--------------------|--------------------------|
-| `hour`, `dow`, `is_weekend`, `month`, `is_payday_window`, `week_index` | calendar | yes | Intra-day peaks, weekend regime, payday, secular trend |
-| `temp_c`, `rain_mm`, `humidity_pct`, `wind_kmh`, `rain_class`, `rain_last_3h` | weather | yes | Rain/comfort shift mode choice; dose response via bins + 3h linger |
-| `in_event_window`, `is_public_holiday`, `is_football_window`, `is_concert_window`, `is_road_closure`, `hours_to_next_football`, `hours_since_football`, `event_attendance_nearby`, `n_events_overlapping` | events | yes | Venue spikes, holiday suppression, closures |
-| `trips_lag_168h`, `trips_roll_mean_24h`, `trips_roll_mean_168h` | lag | yes (history) | Same-hour last week + recent zone level |
+- **Calendar (≥3):** `hour`, `dow`, `is_weekend`, `month`, `is_payday_window`, `week_index`
+- **Weather (≥2):** `rain_class`, `rain_last_3h` (+ raw weather columns)
+- **Events (≥3):** `in_event_window`, `is_football_window`, `hours_to_next_football`, `event_attendance_nearby`, …
+- **Lag/trend (≥1):** `trips_lag_168h`, `trips_roll_mean_24h`, `trips_roll_mean_168h`, `week_index`
 
 **Excluded from model inputs (leakage):** `avg_fare_birr`, `avg_wait_min`, `active_drivers`.
 
@@ -163,7 +120,7 @@ See `reports/A7_integrity_checks.md`. Latest run: **all PASS** (unique zone-hour
 | File | Location |
 |------|----------|
 | `master_train.csv` | `data/processed/` |
-| `master_test.csv` | `data/processed/` (no `trips` / ops outcome columns) |
+| `master_test.csv` | `data/processed/` |
 | `data_dictionary_master.csv` | `data/processed/` |
 
 Test rows use the **same pipeline**; lag medians and imputations are learned from train only.

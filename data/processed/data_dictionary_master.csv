@@ -1,33 +1,33 @@
-column,type,source,description,derived_how,known_at_forecast_time,why_helps
-row_id,id,test/submission,Row id,pass-through,n/a,Submission join key
-record_id,id,train,Record id,pass-through,n/a,Train row identity
-zone,categorical,trips,Canonical pickup zone,alias map,yes,Demand level and shape differ strongly by neighborhood
-pickup_hour,datetime,trips,Hour start in EAT,parsed/floored,yes,Primary time key for joins and seasonality
-trips,target,trips,Trips in zone-hour,cleaned/capped,n/a (target),What we predict
-hour,int,calendar,Hour of day 0-23,pickup_hour.dt.hour,yes,Captures commute and market peaks within the day
-dow,int,calendar,Day of week Mon=0,pickup_hour.dt.dayofweek,yes,Weekday vs weekend demand patterns differ
-is_weekend,int,calendar,Sat/Sun flag,dow>=5,yes,Simple weekend regime switch for trees
-month,int,calendar,Month number,pickup_hour.dt.month,yes,Seasonal level shifts across the year
-is_payday_window,int,calendar,Payday proximity flag,day<=3 or last 3 days,yes,Salary cycles can lift short trips near month edges
-week_index,int,calendar/trend,Weeks since 2025-01-01,(date-origin)//7,yes,Secular growth/trend so Nov is not fit on Jan levels alone
-temp_c,float,weather,Temperature C,joined weather,yes (forecast in Nov),Comfort and outdoor activity affect ride propensity
-rain_mm,float,weather,Rain mm in hour,joined weather; sentinel fixed,yes,Rain shifts people from walking/transit to rides
-humidity_pct,float,weather,Relative humidity %,joined weather,yes,Complements temp/rain comfort signal
-wind_kmh,float,weather,Wind km/h,joined weather,yes,Harsh wind can nudge mode choice
-rain_class,categorical,weather,none/light/moderate/heavy,binned rain_mm,yes,Non-linear rain dose response (saturation)
-rain_last_3h,float,weather,Sum of rain previous 3h incl current,rolling sum by zone,yes,Lingering wet conditions after the peak hour
-in_event_window,int,events,Any confirmed event window,interval join,yes,Crowds and closures change demand near venues
-is_public_holiday,int,events,Public holiday flag,event_type window,yes,Holidays usually suppress city-wide demand
-is_football_window,int,events,Football pre/during/post window,±2h window,yes,Match arrivals/departures create local spikes
-is_concert_window,int,events,Concert window,±2h window,yes,Evening venue demand differs from football
-is_road_closure,int,events,Road closure active,event window,yes,Closures reroute or suppress zone pickups
-hours_to_next_football,float,events,Hours until next match start,zone match calendar,yes,Anticipation ramp before kickoff
-hours_since_football,float,events,Hours since last match start,zone match calendar,yes,Post-match dispersal lag
-event_attendance_nearby,float,events,Max attendance in overlapping events,parsed attendance,yes,Larger events imply larger demand shocks
-n_events_overlapping,int,events,Count of overlapping events,interval join,yes,Stacked events compound pressure
-trips_lag_168h,float,lag,Trips same zone 168h ago,shift(168),yes (from history),Same hour last week is a strong seasonal baseline
-trips_roll_mean_24h,float,lag,Mean trips prior 24h,shift+rolling,yes (from history),Recent short-run level of the zone
-trips_roll_mean_168h,float,lag,Mean trips prior 168h,shift+rolling,yes (from history),Weekly average level / local trend
-avg_fare_birr,float,ops,Avg fare (train only),raw cleaned,no — not known at forecast time,EDA/demo only — would leak if used to predict
-avg_wait_min,float,ops,Avg wait (train only),raw cleaned,no — not known at forecast time,EDA only — outcome concurrent with demand
-active_drivers,int,ops,Active drivers (train only),raw,no — not known at forecast time,Supply outcome — excluded to avoid leakage
+column,type,source,description,derived_how,known_at_forecast_time
+row_id,id,test/submission,Row id,pass-through,n/a
+record_id,id,train,Record id,pass-through,n/a
+zone,categorical,trips,Canonical pickup zone,alias map,yes
+pickup_hour,datetime,trips,Hour start in EAT,parsed/floored,yes
+trips,target,trips,Trips in zone-hour,cleaned/capped,n/a (target)
+hour,int,calendar,Hour of day 0-23,pickup_hour.dt.hour,yes
+dow,int,calendar,Day of week Mon=0,pickup_hour.dt.dayofweek,yes
+is_weekend,int,calendar,Sat/Sun flag,dow>=5,yes
+month,int,calendar,Month number,pickup_hour.dt.month,yes
+is_payday_window,int,calendar,Payday proximity flag,day<=3 or last 3 days,yes
+week_index,int,calendar/trend,Weeks since 2025-01-01,(date-origin)//7,yes
+temp_c,float,weather,Temperature C,joined weather,yes (forecast in Nov)
+rain_mm,float,weather,Rain mm in hour,joined weather; sentinel fixed,yes
+humidity_pct,float,weather,Relative humidity %,joined weather,yes
+wind_kmh,float,weather,Wind km/h,joined weather,yes
+rain_class,categorical,weather,none/light/moderate/heavy,binned rain_mm,yes
+rain_last_3h,float,weather,Sum of rain previous 3h incl current,rolling sum by zone,yes
+in_event_window,int,events,Any confirmed event window,interval join,yes
+is_public_holiday,int,events,Public holiday flag,event_type window,yes
+is_football_window,int,events,Football pre/during/post window,±2h window,yes
+is_concert_window,int,events,Concert window,±2h window,yes
+is_road_closure,int,events,Road closure active,event window,yes
+hours_to_next_football,float,events,Hours until next match start,zone match calendar,yes
+hours_since_football,float,events,Hours since last match start,zone match calendar,yes
+event_attendance_nearby,float,events,Max attendance in overlapping events,parsed attendance,yes
+n_events_overlapping,int,events,Count of overlapping events,interval join,yes
+trips_lag_168h,float,lag,Trips same zone 168h ago,shift(168),yes (from history)
+trips_roll_mean_24h,float,lag,Mean trips prior 24h,shift+rolling,yes (from history)
+trips_roll_mean_168h,float,lag,Mean trips prior 168h,shift+rolling,yes (from history)
+avg_fare_birr,float,ops,Avg fare (train only),raw cleaned,no — not known at forecast time
+avg_wait_min,float,ops,Avg wait (train only),raw cleaned,no — not known at forecast time
+active_drivers,int,ops,Active drivers (train only),raw,no — not known at forecast time

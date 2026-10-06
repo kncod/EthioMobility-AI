@@ -44,7 +44,7 @@ Pinned versions are in `requirements.txt`. For the demo only: `pip install -r ap
 - Figures: `figures/fig01`–`fig12` + `figure_captions.md`
 - Model: `models/final_model.joblib`
 - Submission: `submission/team_addis_demand_ai_submission.csv` (4,032 rows)
-- Demo: `app/app.py` · [Live Streamlit app](https://ethiomobility-ai-6vn5hrkftvxgek3su5xkie.streamlit.app/)
+- Demo: `app/app.py` (local: http://localhost:8501)
 - Slides: `presentation/team_addis_demand_ai_slides.pptx`
 
 ## Validation score (chronological, 18–31 Oct)
@@ -70,4 +70,4 @@ Dashboard includes uncertainty band, vs-typical %, city overview tab, and CSV do
 - Timestamps after cleaning use **Africa/Addis_Ababa**.
 - Model excludes `avg_fare_birr`, `avg_wait_min`, `active_drivers` (not known at forecast time).
 - Validation is chronological — never random split, never score on the test file.
-- Layout root is this repo (`EthioMobility-AI`); submission file uses `team_addis_demand_ai_*` naming.
+- Streamlit Cloud: Main file path = `app/app.py`, packages file = `app/requirements.txt`.

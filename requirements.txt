@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 pandas==2.2.3
 numpy==2.1.3
 matplotlib==3.9.3
@@ -17,22 +16,3 @@ ipykernel==6.29.5
 openpyxl==3.1.5
 kaleido==0.2.1
 python-pptx==1.0.2
-=======
-pandas>=2.0
-numpy>=1.24
-matplotlib>=3.7
-seaborn>=0.13
-tabulate>=0.9
-scikit-learn>=1.3
-lightgbm>=4.0
-joblib>=1.3
-plotly>=5.18
-streamlit>=1.28
-optuna>=3.4
-jupyter>=1.0
-openpyxl>=3.1
-kaleido>=0.2
-python-pptx>=1.0
-
-# Add SEEDS = [42, 456, 759, 101112]
->>>>>>> 6474a36d5fe35d99c76893a6dceaffa56c72366f

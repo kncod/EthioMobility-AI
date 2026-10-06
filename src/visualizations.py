@@ -536,14 +536,8 @@ def run_model_bundle(master: pd.DataFrame) -> dict:
         "random_forest": RandomForestRegressor(
             n_estimators=80, max_depth=12, n_jobs=-1, random_state=RANDOM_STATE
         ),
-        # Match modeling.py D2 defaults so fig11/12 align with D2 untuned HistGBM
         "hist_gbm": HistGradientBoostingRegressor(
-            max_depth=8,
-            learning_rate=0.08,
-            max_iter=250,
-            min_samples_leaf=20,
-            l2_regularization=0.1,
-            random_state=RANDOM_STATE,
+            max_depth=6, learning_rate=0.08, max_iter=200, random_state=RANDOM_STATE
         ),
     }
 
@@ -578,12 +572,7 @@ def run_model_bundle(master: pd.DataFrame) -> dict:
                 (
                     "model",
                     HistGradientBoostingRegressor(
-                        max_depth=8,
-                        learning_rate=0.08,
-                        max_iter=250,
-                        min_samples_leaf=20,
-                        l2_regularization=0.1,
-                        random_state=RANDOM_STATE,
+                        max_depth=6, learning_rate=0.08, max_iter=200, random_state=RANDOM_STATE
                     ),
                 ),
             ]
@@ -637,58 +626,35 @@ def run_model_bundle(master: pd.DataFrame) -> dict:
     }
 
 
-def fig10_model_comparison(bundle: dict | None = None) -> None:
-    """Use D2/D3 tables when present so fig10 matches the modeling report."""
-    d2_path = ROOT / "reports" / "D_tables" / "D2_model_comparison.csv"
-    d3_path = ROOT / "reports" / "D_tables" / "D3_rolling_origin.csv"
-    if d2_path.exists():
-        res = pd.read_csv(d2_path).sort_values("rmse", ascending=False)
-        model_col, rmse_col = "model", "rmse"
-    else:
-        res = bundle["results"].sort_values("rmse", ascending=False)
-        model_col, rmse_col = "model", "rmse"
-
-    if d3_path.exists():
-        roll = pd.read_csv(d3_path)
-        mean_f = float(roll["hist_gbm_rmse"].mean())
-        std_f = float(roll["hist_gbm_rmse"].std())
-    elif bundle and bundle.get("fold_rmses"):
-        mean_f = float(np.mean(bundle["fold_rmses"]))
-        std_f = float(np.std(bundle["fold_rmses"]))
-    else:
-        mean_f, std_f = np.nan, np.nan
-
+def fig10_model_comparison(bundle: dict) -> None:
+    res = bundle["results"].sort_values("rmse", ascending=False)
     fig, ax = plt.subplots(figsize=(10, 5.5))
     colors = []
-    for m in res[model_col]:
+    for m in res["model"]:
         if m in ("mean_baseline", "seasonal_naive"):
             colors.append(COLORS["gray"])
         elif m == "hist_gbm":
             colors.append(COLORS["green"])
         else:
             colors.append(COLORS["blue"])
-    ax.barh(res[model_col], res[rmse_col], color=colors, xerr=None)
-    if np.isfinite(mean_f) and "hist_gbm" in list(res[model_col]):
-        y_pos = list(res[model_col]).index("hist_gbm")
-        ax.errorbar(
-            mean_f,
-            y_pos,
-            xerr=std_f,
-            fmt="o",
-            color=COLORS["vermillion"],
-            capsize=4,
-            label=f"hist_gbm rolling RMSE {mean_f:.2f}±{std_f:.2f}",
-        )
+    ax.barh(res["model"], res["rmse"], color=colors, xerr=None)
+    # error bars on final model from rolling folds
+    if bundle["fold_rmses"]:
+        mean_f = np.mean(bundle["fold_rmses"])
+        std_f = np.std(bundle["fold_rmses"])
+        # mark on hist_gbm bar
+        y_pos = list(res["model"]).index("hist_gbm")
+        ax.errorbar(mean_f, y_pos, xerr=std_f, fmt="o", color=COLORS["vermillion"], capsize=4, label=f"hist_gbm rolling RMSE {mean_f:.2f}±{std_f:.2f}")
         ax.legend()
     ax.set_xlabel("Validation RMSE (trips)")
-    ax.set_title("fig10 — Model comparison (D2 holdout; D3 rolling bar on HistGBM)")
+    ax.set_title("fig10 — Model comparison (train < 18 Oct, valid 18–31 Oct)")
     ax.set_xlim(left=0)
     fig.tight_layout()
     save(
         fig,
         "fig10_model_comparison.png",
-        "Validation RMSE from D2 (untuned HistGBM ≈10.66); rolling-origin error bar from D3 (11.06±0.42). "
-        "Tuned final model is 10.16 (D6). Takeaway: seasonal naive beats a global mean; trees improve further.",
+        "Validation RMSE for baselines and model families; rolling-origin error bar on HistGBM. "
+        "Takeaway: seasonal naive beats a global mean; boosted trees improve further — report chronological scores only.",
     )
 
 
