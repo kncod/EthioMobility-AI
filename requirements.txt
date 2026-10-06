@@ -13,3 +13,5 @@ jupyter>=1.0
 openpyxl>=3.1
 kaleido>=0.2
 python-pptx>=1.0
+
+# Add SEEDS = [42, 456, 759, 101112]
