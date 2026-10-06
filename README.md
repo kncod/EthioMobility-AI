@@ -2,7 +2,10 @@
 
 Qiyas AI Hackathon #2: Addis Ride Demand Forecasting Challenge  
 **Track:** Intelligent Data & AI Engineering (IDAE)  
-**Program:** EDI-Qiyas-CoDiST Advanced Digital Skills Program
+**Program:** EDI-Qiyas-CoDiST Advanced Digital Skills Program  
+**Repo:** [kncod/EthioMobility-AI](https://github.com/kncod/EthioMobility-AI)
+
+We forecast hourly ride demand for 12 Addis Ababa zones (1–14 Nov 2025) by cleaning and joining trips, weather, and events; engineering calendar/weather/event/lag features known at forecast time; and training a chronological HistGradientBoosting model. Validation RMSE ≈ **10.16** trips/hour (MAE ≈ 6.41) vs seasonal naive ≈ 12.08. A Streamlit demo lets ops pick a zone and date for a 24h plan.
 
 ## Team
 
@@ -14,11 +17,15 @@ Qiyas AI Hackathon #2: Addis Ride Demand Forecasting Challenge
 ## Setup
 
 ```bash
-cd c:\xampp\ride_forcasting
+git clone https://github.com/kncod/EthioMobility-AI.git
+cd EthioMobility-AI
 python -m venv .venv
-.venv\Scripts\activate
+# Windows: .venv\Scripts\activate
+# macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+Pinned versions are in `requirements.txt`. For the demo only: `pip install -r app/requirements.txt`.
 
 ## Run order
 
@@ -37,26 +44,30 @@ pip install -r requirements.txt
 - Figures: `figures/fig01`–`fig12` + `figure_captions.md`
 - Model: `models/final_model.joblib`
 - Submission: `submission/team_addis_demand_ai_submission.csv` (4,032 rows)
-- Demo: `app/app.py` (local: http://localhost:8501)
+- Demo: `app/app.py` · [Live Streamlit app](https://ethiomobility-ai-6vn5hrkftvxgek3su5xkie.streamlit.app/)
 - Slides: `presentation/team_addis_demand_ai_slides.pptx`
 
 ## Validation score (chronological, 18–31 Oct)
 
-- **HistGBM RMSE ≈ 10.16** · MAE ≈ 6.41
+- **Tuned HistGBM RMSE ≈ 10.16** · MAE ≈ 6.41 (final model / D6)
+- Untuned HistGBM (D2 default params) RMSE ≈ **10.66** — same family, before tuning
+- Rolling-origin (D3, 5 folds): RMSE **11.06 ± 0.42**
 - Seasonal naive RMSE ≈ 12.08 · Mean baseline ≈ 27.88
 
 ## Demo
+
+**Live:** https://ethiomobility-ai-6vn5hrkftvxgek3su5xkie.streamlit.app/
 
 ```bash
 python -m streamlit run app/app.py
 ```
 
 Pick a zone and any date in **1–14 Nov 2025**. Weather/events load automatically.  
-Dashboard includes uncertainty band, vs-typical %, city overview tab, and CSV download.  
-Local demo is fine if hosting is unavailable.
+Dashboard includes uncertainty band, vs-typical %, city overview tab, and CSV download.
 
 ## Notes
 
 - Timestamps after cleaning use **Africa/Addis_Ababa**.
 - Model excludes `avg_fare_birr`, `avg_wait_min`, `active_drivers` (not known at forecast time).
 - Validation is chronological — never random split, never score on the test file.
+- Layout root is this repo (`EthioMobility-AI`); submission file uses `team_addis_demand_ai_*` naming.
