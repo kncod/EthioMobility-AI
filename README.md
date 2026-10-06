@@ -37,7 +37,8 @@ pip install -r requirements.txt
 - Figures: `figures/fig01`–`fig12` + `figure_captions.md`
 - Model: `models/final_model.joblib`
 - Submission: `submission/team_addis_demand_ai_submission.csv` (4,032 rows)
-- Demo: `app/app.py` (local: http://localhost:8501)
+- Demo: [`app/app.py`](app/app.py) | [🚀 Live Demo](https://ethiomobility-ai-6vn5hrkftvxgek3su5xkie.streamlit.app/)
+)
 - Slides: `presentation/team_addis_demand_ai_slides.pptx`
 
 ## Validation score (chronological, 18–31 Oct)
