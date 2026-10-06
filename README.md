@@ -25,7 +25,8 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-Pinned versions are in `requirements.txt`. For the demo only: `pip install -r app/requirements.txt`.
+Full local stack: `pip install -r requirements-dev.txt`.  
+Demo only: `pip install -r app/requirements.txt`.
 
 ## Run order
 
@@ -70,4 +71,5 @@ Dashboard includes uncertainty band, vs-typical %, city overview tab, and CSV do
 - Timestamps after cleaning use **Africa/Addis_Ababa**.
 - Model excludes `avg_fare_birr`, `avg_wait_min`, `active_drivers` (not known at forecast time).
 - Validation is chronological — never random split, never score on the test file.
-- Streamlit Cloud: Main file path = `app/app.py`, packages file = `app/requirements.txt`, Python **3.11** (see `.python-version`).
+- **Streamlit Cloud (important):** Main file = `app/app.py`, requirements = `app/requirements.txt`, Python **3.11**.  
+  Cloud ignores `.python-version`. To change Python you must **delete the app and redeploy**, then in **Advanced settings** pick Python 3.11 (do not leave 3.14). See [Streamlit docs](https://docs.streamlit.io/deploy/streamlit-community-cloud/manage-your-app/upgrade-python).
